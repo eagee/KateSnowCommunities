@@ -1,0 +1,318 @@
+fileFormatVersion: 2
+guid: ace1d8881d518b34e9043587c1137b55
+timeCreated: 1463334182
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Shapes_0
+    21300002: Shapes_1
+    21300004: Shapes_2
+    21300006: Shapes_3
+    21300008: Shapes_4
+    21300010: Shapes_5
+    21300012: Shapes_6
+    21300014: Shapes_7
+    21300016: Shapes_8
+    21300018: Shapes_9
+    21300020: Shapes_10
+    21300022: Shapes_11
+    21300024: Shapes_12
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 152
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Shapes_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 35, y: 67}
+        - {x: -35, y: 67}
+        - {x: -71, y: 39}
+        - {x: -75, y: 7}
+        - {x: -75, y: -40}
+        - {x: 74, y: -40}
+        - {x: 76, y: -36}
+        - {x: 76, y: 16}
+        - {x: 46, y: 66}
+    - name: Shapes_1
+      rect:
+        serializedVersion: 2
+        x: 152
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -45, y: 73}
+        - {x: -66, y: 45}
+        - {x: -76, y: 6}
+        - {x: -76, y: -37}
+        - {x: 76, y: -37}
+        - {x: 76, y: 18}
+        - {x: 57, y: 73}
+    - name: Shapes_2
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 65, y: 44}
+        - {x: 46, y: 61}
+        - {x: -28, y: 61}
+        - {x: -73, y: 46}
+        - {x: -73, y: -36}
+        - {x: -66, y: -40}
+        - {x: 17, y: -40}
+        - {x: 70, y: -38}
+        - {x: 73, y: -36}
+        - {x: 73, y: 4}
+    - name: Shapes_3
+      rect:
+        serializedVersion: 2
+        x: 456
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -43, y: 56}
+        - {x: -76, y: 15}
+        - {x: -76, y: -40}
+        - {x: 76, y: -40}
+        - {x: 76, y: 27}
+        - {x: 49, y: 56}
+    - name: Shapes_4
+      rect:
+        serializedVersion: 2
+        x: 608
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -76, y: -40}
+        - {x: 76, y: -40}
+        - {x: 76, y: 4}
+        - {x: 52, y: 51}
+        - {x: 43, y: 54}
+        - {x: -33, y: 54}
+        - {x: -76, y: 39}
+    - name: Shapes_5
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 3, y: 59}
+        - {x: -24, y: 59}
+        - {x: -32, y: 58}
+        - {x: -49, y: 53}
+        - {x: -76, y: 13}
+        - {x: -76, y: -38}
+        - {x: -49, y: -39}
+        - {x: 61, y: -39}
+        - {x: 76, y: -37}
+        - {x: 76, y: 9}
+        - {x: 35, y: 54}
+    - name: Shapes_6
+      rect:
+        serializedVersion: 2
+        x: 912
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -75, y: -38}
+        - {x: 76, y: -38}
+        - {x: 76, y: 28}
+        - {x: 70, y: 58}
+        - {x: -67, y: 58}
+        - {x: -75, y: 46}
+    - name: Shapes_7
+      rect:
+        serializedVersion: 2
+        x: 1064
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 28, y: 59}
+        - {x: -32, y: 59}
+        - {x: -56, y: 55}
+        - {x: -76, y: 17}
+        - {x: -76, y: -36}
+        - {x: 75, y: -36}
+        - {x: 76, y: -35}
+        - {x: 76, y: 9}
+        - {x: 54, y: 50}
+    - name: Shapes_8
+      rect:
+        serializedVersion: 2
+        x: 1216
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 37, y: 57}
+        - {x: -36, y: 57}
+        - {x: -76, y: 15}
+        - {x: -76, y: -32}
+        - {x: -23, y: -37}
+        - {x: 76, y: -37}
+        - {x: 76, y: 23}
+        - {x: 58, y: 51}
+    - name: Shapes_9
+      rect:
+        serializedVersion: 2
+        x: 1368
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 45, y: 66}
+        - {x: -6, y: 66}
+        - {x: -27, y: 59}
+        - {x: -69, y: 29}
+        - {x: -76, y: -2}
+        - {x: -76, y: -39}
+        - {x: 52, y: -39}
+        - {x: 69, y: -36}
+        - {x: 75, y: -22}
+        - {x: 75, y: 35}
+    - name: Shapes_10
+      rect:
+        serializedVersion: 2
+        x: 1520
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -33, y: 73}
+        - {x: -75, y: 44}
+        - {x: -76, y: 31}
+        - {x: -76, y: -37}
+        - {x: 7, y: -37}
+        - {x: 75, y: -35}
+        - {x: 75, y: 61}
+        - {x: 42, y: 73}
+    - name: Shapes_11
+      rect:
+        serializedVersion: 2
+        x: 1672
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -50, y: 63}
+        - {x: -76, y: 44}
+        - {x: -76, y: -32}
+        - {x: -67, y: -35}
+        - {x: 76, y: -35}
+        - {x: 76, y: 30}
+        - {x: 52, y: 63}
+    - name: Shapes_12
+      rect:
+        serializedVersion: 2
+        x: 1824
+        y: 0
+        width: 152
+        height: 152
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -44, y: 63}
+        - {x: -76, y: 28}
+        - {x: -76, y: -27}
+        - {x: -61, y: -37}
+        - {x: 76, y: -37}
+        - {x: 76, y: 9}
+        - {x: 30, y: 63}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
