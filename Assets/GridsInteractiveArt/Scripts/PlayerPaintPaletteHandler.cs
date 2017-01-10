@@ -21,6 +21,8 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         ID = this.gameObject.name;
         myCurrentSprintShape = 0;
         myTimer = 0f;
+        // Ensure this item is hidden on startup, since it should only be displayed when the client is finally connected.
+        SpriteBehavior.SetSpriteAlpha(this.gameObject, 0.0f);
     }
 
     void Awake()
@@ -64,20 +66,8 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         }
         
         HandleSelectionChanges();
-        
-        Color currentColor = this.gameObject.GetComponent<Renderer>().material.color;
-        if(currentColor.a < myTargetAlpha)
-        {
-            currentColor.a += 1.0f * Time.deltaTime;
-            if (currentColor.a > myTargetAlpha) currentColor.a = myTargetAlpha;
-        }
-        else if (currentColor.a > myTargetAlpha)
-        {
-            currentColor.a -= 1.0f * Time.deltaTime;
-            if (currentColor.a < myTargetAlpha) currentColor.a = myTargetAlpha;
-        }
-         
-        this.gameObject.GetComponent<Renderer>().material.color = currentColor;
+
+        SpriteBehavior.FadeAlphaToTarget(this.gameObject, myTargetAlpha);
 
         // if(isSelected)
         // {

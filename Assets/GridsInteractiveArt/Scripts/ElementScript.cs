@@ -10,6 +10,12 @@ public class ElementScript : MonoBehaviour
     public GameObject myPaintBullet;
     public NetworkManager myNetworkManager;
 
+    void Start()
+    {
+        // Ensure this item is hidden on startup, since it should only be displayed when the client is finally connected.
+        SpriteBehavior.SetSpriteAlpha(this.gameObject, 0.0f);
+    }
+
     void Awake()
     {
         myNetworkManager = FindObjectOfType<NetworkManager>();

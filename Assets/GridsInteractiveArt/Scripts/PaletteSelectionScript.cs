@@ -17,8 +17,10 @@ public class PaletteSelectionScript : MonoBehaviour
     {
         myCurrentSprintShape = 0;
         myTimer = 0f;
+        SpriteBehavior.SetSpriteAlpha(this.gameObject, 0.0f);
     }
 
+    
     void Update()
     {
         // If the shape isn't selected, target alpha will always be 0 (so it will be hidden)
@@ -30,18 +32,8 @@ public class PaletteSelectionScript : MonoBehaviour
             myTargetAlpha = 1.0f;
         }
 
-        Color currentColor = this.gameObject.GetComponent<Renderer>().material.color;
-        if(currentColor.a < myTargetAlpha)
-        {
-            currentColor.a += 1.0f * Time.deltaTime;
-            if (currentColor.a > myTargetAlpha) currentColor.a = myTargetAlpha;
-        }
-        else if (currentColor.a > myTargetAlpha)
-        {
-            currentColor.a -= 1.0f * Time.deltaTime;
-            if (currentColor.a < myTargetAlpha) currentColor.a = myTargetAlpha;
-        }
-        this.gameObject.GetComponent<Renderer>().material.color = currentColor;
+        SpriteBehavior.FadeAlphaToTarget(this.gameObject, myTargetAlpha);
+
 
         GetComponent<SpriteRenderer>().sprite = spriteShapes[myCurrentSprintShape];
         //ChangePaletteShape();
