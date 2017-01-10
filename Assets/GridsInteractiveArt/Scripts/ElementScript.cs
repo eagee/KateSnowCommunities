@@ -24,18 +24,13 @@ public class ElementScript : MonoBehaviour
     void Update()
     {
         Renderer render = GetComponent<Renderer>();
+
         if (render != null)
             render.enabled = isVisible;
 
         if(!myNetworkManager.IsClientConnected())
         {
-            Color currentColor = this.gameObject.GetComponent<Renderer>().material.color;
-            if (currentColor.a > 0.0f)
-            {
-                currentColor.a -= 1.0f * Time.deltaTime;
-                if (currentColor.a < 0.0f) currentColor.a = 0.0f;
-            }
-            this.gameObject.GetComponent<Renderer>().material.color = currentColor;
+            SpriteBehavior.FadeAlphaToTarget(this.gameObject, 1f, 0f);
         }
     }
 

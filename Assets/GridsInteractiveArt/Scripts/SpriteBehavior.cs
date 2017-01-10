@@ -11,17 +11,17 @@ public static class SpriteBehavior  {
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 
-    public static void FadeAlphaToTarget(GameObject gameObject, float myTargetAlpha)
+    public static void FadeAlphaToTarget(GameObject gameObject, float fadeSpeed, float myTargetAlpha)
     {
         Color currentColor = gameObject.GetComponent<Renderer>().material.color;
         if (currentColor.a < myTargetAlpha)
         {
-            currentColor.a += 1.0f * Time.deltaTime;
+            currentColor.a += fadeSpeed * Time.deltaTime;
             if (currentColor.a > myTargetAlpha) currentColor.a = myTargetAlpha;
         }
         else if (currentColor.a > myTargetAlpha)
         {
-            currentColor.a -= 1.0f * Time.deltaTime;
+            currentColor.a -= fadeSpeed * Time.deltaTime;
             if (currentColor.a < myTargetAlpha) currentColor.a = myTargetAlpha;
         }
         gameObject.GetComponent<Renderer>().material.color = currentColor;

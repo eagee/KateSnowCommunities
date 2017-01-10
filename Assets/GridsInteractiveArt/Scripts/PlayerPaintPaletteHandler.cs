@@ -67,7 +67,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         
         HandleSelectionChanges();
 
-        SpriteBehavior.FadeAlphaToTarget(this.gameObject, myTargetAlpha);
+        SpriteBehavior.FadeAlphaToTarget(this.gameObject, 1f, myTargetAlpha);
 
         // if(isSelected)
         // {

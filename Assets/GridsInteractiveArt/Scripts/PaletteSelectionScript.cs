@@ -32,7 +32,7 @@ public class PaletteSelectionScript : MonoBehaviour
             myTargetAlpha = 1.0f;
         }
 
-        SpriteBehavior.FadeAlphaToTarget(this.gameObject, myTargetAlpha);
+        SpriteBehavior.FadeAlphaToTarget(this.gameObject, 4f, myTargetAlpha);
 
 
         GetComponent<SpriteRenderer>().sprite = spriteShapes[myCurrentSprintShape];

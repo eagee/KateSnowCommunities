@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Networking;
 
 public class SmoothCamera2D : MonoBehaviour {
 	private Vector2 velocity;
 	public float smoothTime = 0.15f;
-	public Transform target;
+	public Transform connectedTarget;
+    public Transform disconnectedTarget;
+    public NetworkManager myNetworkManager;
+    public Transform activeTarget;
 
     float rightBound;
     float leftBound;
@@ -14,13 +18,15 @@ public class SmoothCamera2D : MonoBehaviour {
     Transform topLeft;
     Transform bottomRight;
 
-    public void setTarget(Transform newTarget)
+    private void setTarget(Transform newTarget)
     {
-        target = newTarget;
+        activeTarget = newTarget;
     }
 
     void Awake()
     {
+        myNetworkManager = FindObjectOfType<NetworkManager>();
+        setTarget(disconnectedTarget);
         this.topLeft = GameObject.FindGameObjectWithTag("TopLeft").transform;
         if (this.topLeft == null)
             Debug.LogError("Couldn't find TopLeft gameObject!");
@@ -31,11 +37,22 @@ public class SmoothCamera2D : MonoBehaviour {
     }
 
 	void Update () {
-		if (target != null) 
+
+        // Update our camera target based on whether we have a client connection or not *and* based on the platform
+        if((myNetworkManager.IsClientConnected()) && (Application.platform != RuntimePlatform.WindowsPlayer))
+        {
+            setTarget(connectedTarget);
+        }
+        else
+        {
+            setTarget(disconnectedTarget);
+        }
+
+		if (activeTarget != null) 
 		{
 			Vector3 pos = this.transform.position;
-			pos.x = Mathf.SmoothDamp (pos.x, target.position.x, ref(velocity.x), smoothTime);
-			pos.y = Mathf.SmoothDamp (pos.y, target.position.y, ref(velocity.y), smoothTime);
+			pos.x = Mathf.SmoothDamp (pos.x, activeTarget.position.x, ref(velocity.x), smoothTime);
+			pos.y = Mathf.SmoothDamp (pos.y, activeTarget.position.y, ref(velocity.y), smoothTime);
 			this.transform.position = pos;
 			ClampPosition ();
 		}
