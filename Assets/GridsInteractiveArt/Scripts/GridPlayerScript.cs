@@ -111,7 +111,7 @@ public class GridPlayerScript : NetworkBehaviour
         }
 
         // Use this to print debug messages when server elements change
-        // myServerElements.Callback = OnServerElementsChanged;
+        //myServerElements.Callback = OnServerElementsChanged;
     }
 
     /// <summary>
@@ -223,13 +223,13 @@ public class GridPlayerScript : NetworkBehaviour
                 newElement.shapeColor = color;
                 newElement.shapeFrame = Random.Range(0, 12);
                 ServerElements[targetIndex] = newElement;
-                RpcClientFrameIsDirty(newElement.ID, newElement.shapeColor);
+                //RpcClientFrameIsDirty(newElement.ID, newElement.shapeColor);
             }
         }        
     }
 
     /// <summary>
-    /// Sets the client frame to dirty when server 
+    /// Sets the client frame to dirty when master instance frame is dirty (since that isn't synced to all clients)
     /// </summary>
     /// <param name="ID"></param>
     [ClientRpc]
@@ -241,10 +241,10 @@ public class GridPlayerScript : NetworkBehaviour
     /// <summary>
     /// Debug routine triggered every time a server element is changed.
     /// </summary>
-    // void OnServerElementsChanged(SyncListStruct<ElementProperty>.Operation op, int itemIndex)
-    // {
-    //          myFrameIsDirty = true;
-    // }
+    //void OnServerElementsChanged(SyncListStruct<ElementProperty>.Operation op, int itemIndex)
+    //{
+    //    myFrameIsDirty = true;
+    //}
 
 
 

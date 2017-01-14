@@ -27,4 +27,20 @@ public static class SpriteBehavior  {
         gameObject.GetComponent<Renderer>().material.color = currentColor;
     }
 
+    public static void HandleCameraZoom(float deltaMagnitudeDiff, Camera inputCamera, float zoomSpeed, float minSize, float maxSize)
+    {
+        // If the camera is orthographic...
+        // ... change the orthographic size based on the change in distance between the touches.
+        inputCamera.orthographicSize += deltaMagnitudeDiff * zoomSpeed;
+
+        if (inputCamera.orthographicSize < minSize) 
+        {
+            inputCamera.orthographicSize = minSize;
+        }
+        else if (inputCamera.orthographicSize > maxSize)
+        {
+            inputCamera.orthographicSize = maxSize;
+        }
+    }
+
 }

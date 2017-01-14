@@ -8,34 +8,59 @@ public class TouchAndMouseInput : MonoBehaviour {
     public Camera inputCamera;
     public float m_minCameraSize = 3.0f;
     public float m_maxCameraSize = 12.0f;
-    public float m_cameraZoomSpeed = 0.25f;
+    public float m_cameraZoomSpeed = 0.0005f;
 
+    private NetworkManager m_networkManager;
     private List<GameObject> touchList = new List<GameObject>();
     private GameObject[] oldTouchList;
     private RaycastHit hit;
     private Vector3 m_lastHitPoint;
 
-    private void HandleMultiTouchInput(ref Touch touchOne, Vector2 touchZeroPrevPos, ref Touch touchZero)
+    void Awake()
     {
-        Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+        m_networkManager = FindObjectOfType<NetworkManager>();
+    }
 
-        // Find the magnitude of the vector (the distance) between the touches in each frame.
-        float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
-        float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
-
-        // Find the difference in the distances between each frame.
-        float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
-
-        // If the camera is orthographic...
-        // ... change the orthographic size based on the change in distance between the touches.
-        inputCamera.orthographicSize += deltaMagnitudeDiff * m_cameraZoomSpeed;
-        if (inputCamera.orthographicSize < m_minCameraSize)
+    private void HandleMultiTouchInput(Touch touchZero, Touch touchOne)
+    {
+        // Handle moving the camera left, right, up, and down (requires three fingers, even if we only use the first two)
+        if (Input.touchCount >= 3)
         {
-            inputCamera.orthographicSize = m_minCameraSize;
+            float moveCameraX = 0f;
+            float moveCameraY = 0f;
+
+            if ((touchZero.deltaPosition.x < 0 && touchOne.deltaPosition.x < 0) || ((touchZero.deltaPosition.x > 0 && touchOne.deltaPosition.x > 0)))
+            {
+                moveCameraX = (Mathf.Min(touchZero.deltaPosition.x, touchOne.deltaPosition.x) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
+            }
+
+            if ((touchZero.deltaPosition.y < 0 && touchOne.deltaPosition.y < 0) || ((touchZero.deltaPosition.y > 0 && touchOne.deltaPosition.y > 0)))
+            {
+                moveCameraY = (Mathf.Min(touchZero.deltaPosition.y, touchOne.deltaPosition.y) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
+            }
+
+            SmoothCamera2D camera2d = inputCamera.GetComponent<SmoothCamera2D>();
+            if ((moveCameraX != 0 || moveCameraY != 0) && (camera2d != null))
+            {
+                camera2d.MoveConnectedTarget(-moveCameraX, -moveCameraY);
+            }
         }
-        else if (inputCamera.orthographicSize > m_maxCameraSize)
-        {
-            inputCamera.orthographicSize = m_maxCameraSize;
+
+        // Handle changing the camera zoom based on the two touches
+        else if (Input.touchCount <= 2)
+        { 
+            // Find the position in the previous frame of each touch.
+            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+            // Find the magnitude of the vector (the distance) between the touches in each frame.
+            float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+            float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+            // Find the difference in the distances between each frame.
+            float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+            SpriteBehavior.HandleCameraZoom(deltaMagnitudeDiff, inputCamera, m_cameraZoomSpeed, m_minCameraSize, m_maxCameraSize);
         }
     }
 
@@ -123,9 +148,7 @@ public class TouchAndMouseInput : MonoBehaviour {
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
-            // Find the position in the previous frame of each touch.
-            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
-            HandleMultiTouchInput(ref touchOne, touchZeroPrevPos, ref touchZero);
+            HandleMultiTouchInput(touchZero, touchOne);
         }
         else if (Input.touchCount == 1 || Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))
         {

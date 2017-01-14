@@ -8,6 +8,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
     public List<Sprite> spriteShapes;
     public Color myPaletteColor = new Color(1.0f, 1.0f, 1.0f);
     public bool isSelected = false;
+    public bool isSelectedOnDisconnect = false;
     public bool isVisible = true;
     public string ID;
     public NetworkManager myNetworkManager;
@@ -64,27 +65,17 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         {
             myTargetAlpha = 1.0f;
         }
+
+        // If the user disconnects, reset to the default color when disconnected...
+        if(isSelectedOnDisconnect && !myNetworkManager.IsClientConnected())
+        {
+            isSelected = true;
+            DeselectOtherPaletteObjects();
+        }
         
         HandleSelectionChanges();
 
         SpriteBehavior.FadeAlphaToTarget(this.gameObject, 1f, myTargetAlpha);
-
-        // if(isSelected)
-        // {
-        //     myTargetScale = new Vector3(3.0f, 3.0f, 3.0f);
-        // }
-        // else
-        // {
-        //     myTargetScale = new Vector3(2.0f, 2.0f, 2.0f);
-        // }
-        // 
-        // Vector3 scale = this.gameObject.transform.localScale;
-        // if (scale.x < myTargetScale.x) scale.x += 0.1f;
-        // if (scale.y < myTargetScale.y) scale.y += 0.1f;
-        // if (scale.x > myTargetScale.x) scale.x -= 0.1f;
-        // if (scale.y > myTargetScale.y) scale.y -= 0.1f;
-        // 
-        // this.gameObject.transform.localScale = scale;
     }
 
     private void AssignColorToLocalPlayer()

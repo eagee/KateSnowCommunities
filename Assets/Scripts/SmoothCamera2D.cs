@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 public class SmoothCamera2D : MonoBehaviour {
 	private Vector2 velocity;
 	public float smoothTime = 0.15f;
+    public float maxOrthographicSize = 12.02705f;
+    public float minOrthographicSize = 3.0f;
 	public Transform connectedTarget;
     public Transform disconnectedTarget;
     public NetworkManager myNetworkManager;
@@ -18,13 +20,32 @@ public class SmoothCamera2D : MonoBehaviour {
     Transform topLeft;
     Transform bottomRight;
 
+    private Vector3 myStartingConnectedPosition;
+
     private void setTarget(Transform newTarget)
     {
         activeTarget = newTarget;
     }
 
+    public void MoveConnectedTarget(float xVelocity, float yVelocity)
+    {
+        if(GetComponent<Camera>().orthographicSize < maxOrthographicSize)
+        { 
+            Vector3 pos = connectedTarget.transform.position;
+            pos.x += xVelocity;
+            pos.y += yVelocity;
+            pos.x = Mathf.Clamp(pos.x, leftBound, rightBound);
+            pos.y = Mathf.Clamp(pos.y, bottomBound, topBound);
+            connectedTarget.transform.position = pos;
+            this.transform.position = connectedTarget.position;
+            ClampPosition();
+        }
+    }
+
     void Awake()
     {
+        myStartingConnectedPosition = connectedTarget.position;
+
         myNetworkManager = FindObjectOfType<NetworkManager>();
         setTarget(disconnectedTarget);
         this.topLeft = GameObject.FindGameObjectWithTag("TopLeft").transform;
@@ -46,6 +67,12 @@ public class SmoothCamera2D : MonoBehaviour {
         else
         {
             setTarget(disconnectedTarget);
+            SpriteBehavior.HandleCameraZoom(1.0f, GetComponent<Camera>(), 0.1f, minOrthographicSize, maxOrthographicSize);
+        }
+
+        if(GetComponent<Camera>().orthographicSize >= 12f)
+        {
+            connectedTarget.transform.position = myStartingConnectedPosition;
         }
 
 		if (activeTarget != null) 
