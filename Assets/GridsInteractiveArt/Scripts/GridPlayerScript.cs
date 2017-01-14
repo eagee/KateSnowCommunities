@@ -30,7 +30,9 @@ public class GridPlayerScript : NetworkBehaviour
     /// </summary>
     public SyncListProperties ServerElements = new SyncListProperties();
 
-    private Color myClientColor;
+    // Contains a dictionary of colors that can be referenced by ElementProperties
+    private Dictionary<int, Color> myClientColors = new Dictionary<int, Color>();
+    private short myPaletteIndex;
 
     /// <summary>
     /// Paint elements based on game objects in the scene that we can set properties on based on the server sync elements.
@@ -43,15 +45,25 @@ public class GridPlayerScript : NetworkBehaviour
     private bool myFrameIsDirty = false;
 
     /// <summary>
-    /// GameObject start method sets reference to the single instance on the server.
+    /// Iterate through each of the palette elements in the scene, and populate a list of their colors in a map.
+    /// Also sets the the current palette index to 1.
     /// </summary>
-    void Start()
+    private void SetupPlayerPalette()
     {
-        //myMasterInstance = this;           
-        myClientColor = new Color(1.0f, 1.0f, 1.0f);
+        myPaletteIndex = 1;
+        PlayerPaintPaletteHandler[] palettes = FindObjectsOfType<PlayerPaintPaletteHandler>();
+        foreach (var palette in palettes)
+        {
+            myClientColors[palette.PaletteIndex] = palette.myPaletteColor;
+        }
+    }
 
-        // If we're setting up the local player, we want to enable their touch input controls
-        // otherwise we won't do that...
+    /// <summary>
+    /// If we're setting up the local player, this method will enable mouse and touch input.
+    /// Otherwise it will disable the touch and mouse input component.
+    /// </summary>
+    private void SetupTouchAndMouseInput()
+    {
         if (isLocalPlayer)
         {
             this.tag = "Player";
@@ -68,11 +80,18 @@ public class GridPlayerScript : NetworkBehaviour
         }
     }
 
-    void setClientClolor(Color clientColor)
+    /// <summary>
+    /// GameObject start method sets reference to the single instance on the server.
+    /// </summary>
+    void Start()
     {
-        myClientColor = clientColor;
-    }
+        // Sets up the palette and colors that will be used to paint the scene.
+        SetupPlayerPalette();
 
+        // Sets up touch and mouse input if this is the local player
+        SetupTouchAndMouseInput();
+    }
+    
     /// <summary>
     /// When the server starts populate ServerElements with all the default properties of the GameObjects in the scene with an "ElementScript" attribute.
     /// (This way our server elements are always updated dynamically based on what's actually in the scene)
@@ -95,7 +114,7 @@ public class GridPlayerScript : NetworkBehaviour
 
             foreach (var element in elements)
             {
-                ElementProperty newProperty = new ElementProperty(element.gameObject.name, Random.Range(0, 12));
+                ElementProperty newProperty = new ElementProperty(element.gameObject.name, (short)Random.Range(0, 12));
                 myMasterInstance.ServerElements.Add(newProperty);
             }
         }
@@ -111,7 +130,7 @@ public class GridPlayerScript : NetworkBehaviour
         }
 
         // Use this to print debug messages when server elements change
-        //myServerElements.Callback = OnServerElementsChanged;
+        //ServerElements.Callback = OnServerElementsChanged;
     }
 
     /// <summary>
@@ -165,7 +184,7 @@ public class GridPlayerScript : NetworkBehaviour
                 if (mySceneElements.ContainsKey(element.ID))
                 {
                     mySceneElements[element.ID].GetComponent<ElementScript>().SetShapeFrame(element.shapeFrame);
-                    mySceneElements[element.ID].GetComponent<Renderer>().material.color = element.shapeColor;
+                    mySceneElements[element.ID].GetComponent<Renderer>().material.color = myClientColors[element.shapePaletteIndex];
                 }
             }
         }
@@ -178,12 +197,15 @@ public class GridPlayerScript : NetworkBehaviour
     /// <param name="elementID"></param>
     public void OnHandleOnChildTouchUp(ElementScript element)
     {
-        CmdServerSetVisibility(element.name, myClientColor);
+        CmdServerSetVisibility(element.name, myPaletteIndex);
     }
 
-    public void OnPaletteColorChanged(Color newColor)
+    public void OnPaletteColorChanged(short paletteIndex)
     {
-        myClientColor = newColor;
+        if(myClientColors.ContainsKey(paletteIndex))
+        {
+            myPaletteIndex = paletteIndex;
+        }        
     }
 
 
@@ -197,9 +219,9 @@ public class GridPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="ID">The name of the component to change.</param>
     [Command]
-    public void CmdServerSetVisibility(string ID, Color color)
+    public void CmdServerSetVisibility(string ID, short paletteIndex)
     {
-        myMasterInstance.CmdSetVisibility(ID, color);
+        myMasterInstance.CmdSetVisibility(ID, paletteIndex);
     }
 
     /// <summary>
@@ -208,8 +230,8 @@ public class GridPlayerScript : NetworkBehaviour
     ///  that hasn't been addressed yet.
     /// </summary>
     /// <param name="ID">The ID of the shape being changed.</param>
-    [Command]
-    public void CmdSetVisibility(string ID, Color color)
+    //[Command]
+    public void CmdSetVisibility(string ID, short paletteIndex)
     {
         int targetIndex = -1;
         ElementProperty newElement = new ElementProperty("Empty", 0);
@@ -220,12 +242,12 @@ public class GridPlayerScript : NetworkBehaviour
             {
                 targetIndex = index;
                 newElement.ID = element.ID;
-                newElement.shapeColor = color;
-                newElement.shapeFrame = Random.Range(0, 12);
+                newElement.shapePaletteIndex = paletteIndex;
+                newElement.shapeFrame = (short)Random.Range(0, 12);
                 ServerElements[targetIndex] = newElement;
-                //RpcClientFrameIsDirty(newElement.ID, newElement.shapeColor);
+                RpcClientFrameIsDirty();
             }
-        }        
+        }
     }
 
     /// <summary>
@@ -233,7 +255,7 @@ public class GridPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="ID"></param>
     [ClientRpc]
-    void RpcClientFrameIsDirty(string ID, Color color)
+    void RpcClientFrameIsDirty()
     {           
         myFrameIsDirty = true;
     }

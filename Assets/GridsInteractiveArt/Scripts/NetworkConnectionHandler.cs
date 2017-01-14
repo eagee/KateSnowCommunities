@@ -18,8 +18,10 @@ public class NetworkConnectionHandler : MonoBehaviour
     private bool m_isServer = false;
     private bool m_useMatchMaker = true;
     private float m_ConnectionTimer = 5.0f;
-    private const float CONNECTION_WAIT_TIME = 1.0f;
-
+    private const float STD_CONNECTION_WAIT_TIME = 1.0f;
+    private const float MAX_CONNECTION_WAIT_TIME = 2.0f;
+    private float m_ConnectionWaitTime = STD_CONNECTION_WAIT_TIME;
+    
     private NetworkManager m_networkManager;
 
     /// <summary>
@@ -78,10 +80,10 @@ public class NetworkConnectionHandler : MonoBehaviour
     void Update()
     {
         m_ConnectionTimer += Time.deltaTime;
-        if (m_ConnectionTimer > CONNECTION_WAIT_TIME)
+        if (m_ConnectionTimer > m_ConnectionWaitTime)
         {
             m_ConnectionTimer = 0.0f;
-
+            m_ConnectionWaitTime = STD_CONNECTION_WAIT_TIME;
             // If this is a server, ensure that there is an active match being hosted via match maker;
             // otherwise attempt to connect to the server via match maker if the client is disconnected.
             if (!NetworkClient.active && !NetworkServer.active)
@@ -106,6 +108,7 @@ public class NetworkConnectionHandler : MonoBehaviour
         if (m_networkManager.matchMaker == null)
         {
             Debug.Log("Starting Matchmaker!");
+            m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
             m_networkManager.StartMatchMaker();
         }
         else if (m_networkManager.matchInfo == null)
@@ -115,11 +118,13 @@ public class NetworkConnectionHandler : MonoBehaviour
                 if (IsServer)
                 {
                     Debug.Log("Creating a Server Match!");
+                    m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
                     m_networkManager.matchMaker.CreateMatch(m_networkManager.matchName, m_networkManager.matchSize, true, "", "", "", 0, 1, m_networkManager.OnMatchCreate);
                 }
                 else
                 {
                     Debug.Log("Getting List of Matches!");
+                    m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
                     m_networkManager.matchMaker.ListMatches(0, 20, m_networkManager.matchName, false, 0, 1, m_networkManager.OnMatchList);
                 }
             }
@@ -130,6 +135,7 @@ public class NetworkConnectionHandler : MonoBehaviour
                 if(m_networkManager.matches.Count > 0)
                 {
                     Debug.Log("Joining KateSnowInteractive Match!");
+                    m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
                     m_networkManager.matchName = m_networkManager.matches[0].name;
                     m_networkManager.matchSize = (uint)m_networkManager.matches[0].currentSize;
                     m_networkManager.matchMaker.JoinMatch(m_networkManager.matches[0].networkId, "", "", "", 0, 1, m_networkManager.OnMatchJoined);

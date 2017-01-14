@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class PlayerPaintPaletteHandler : MonoBehaviour
 {
     public List<Sprite> spriteShapes;
+    public short PaletteIndex = 0;
     public Color myPaletteColor = new Color(1.0f, 1.0f, 1.0f);
     public bool isSelected = false;
     public bool isSelectedOnDisconnect = false;
@@ -31,7 +32,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         // We're going to hide these objects in the windows player, but show them in the editor.
         if (Application.platform == RuntimePlatform.WindowsPlayer)
         {
-            isVisible = true;
+            isVisible = false;
         }
         else
         {
@@ -86,7 +87,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
         {
             if (player.isLocalPlayer)
             {
-                player.SendMessage("OnPaletteColorChanged", myPaletteColor);
+                player.SendMessage("OnPaletteColorChanged", PaletteIndex);
             }
         }
     }

@@ -7,7 +7,8 @@ public class SmoothCamera2D : MonoBehaviour {
 	public float smoothTime = 0.15f;
     public float maxOrthographicSize = 12.02705f;
     public float minOrthographicSize = 3.0f;
-	public Transform connectedTarget;
+    public bool isTakingScreenShot = false;
+    public Transform connectedTarget;
     public Transform disconnectedTarget;
     public NetworkManager myNetworkManager;
     public Transform activeTarget;
@@ -60,7 +61,7 @@ public class SmoothCamera2D : MonoBehaviour {
 	void Update () {
 
         // Update our camera target based on whether we have a client connection or not *and* based on the platform
-        if((myNetworkManager.IsClientConnected()) && (Application.platform != RuntimePlatform.WindowsPlayer))
+        if((myNetworkManager.IsClientConnected()) && (Application.platform != RuntimePlatform.WindowsPlayer) && (!isTakingScreenShot))
         {
             setTarget(connectedTarget);
         }

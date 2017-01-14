@@ -4,12 +4,12 @@ using UnityEngine;
 public struct ElementProperty
 {
     public string ID;
-    public int shapeFrame;
-    public Color shapeColor;
-    public ElementProperty(string id, int frame)
+    public short shapeFrame;
+    public short shapePaletteIndex;
+    public ElementProperty(string id, short frame)
     {
         ID = id;
         shapeFrame = frame;
-        shapeColor = new Color(1.0f, 1.0f, 1.0f);
+        shapePaletteIndex = 1;
     }
 }
