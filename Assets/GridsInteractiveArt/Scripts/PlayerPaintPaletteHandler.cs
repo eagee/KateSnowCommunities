@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class PlayerPaintPaletteHandler : MonoBehaviour
 {
     public List<Sprite> spriteShapes;
-    public short PaletteIndex = 0;
+    public byte PaletteIndex = 0;
     public Color myPaletteColor = new Color(1.0f, 1.0f, 1.0f);
     public bool isSelected = false;
     public bool isSelectedOnDisconnect = false;

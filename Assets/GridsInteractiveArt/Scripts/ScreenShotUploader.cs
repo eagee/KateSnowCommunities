@@ -72,7 +72,11 @@ public class ScreenShotUploader : MonoBehaviour
     {
         print("Generating screen shot!");
 
+        //Animator animator = GetComponent<Animator>();
+        //animator.SetBool("UploadingScreenShot", true);
+
         StartCoroutine(SwitchToDisconnectedDisplay());
+        yield return new WaitForSeconds(1);
 
         // We should only read the screen after all rendering is complete 
         yield return new WaitForEndOfFrame();
@@ -109,6 +113,8 @@ public class ScreenShotUploader : MonoBehaviour
         }
 
         StartCoroutine(SwitchToConnectedDisplay());
+
+        //animator.SetBool("UploadingScreenShot", false);
 
         Application.OpenURL("http://katesnow.work/wp-content/communities_gallery/");
     }

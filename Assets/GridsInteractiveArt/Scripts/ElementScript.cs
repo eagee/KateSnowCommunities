@@ -53,6 +53,14 @@ public class ElementScript : MonoBehaviour
         bullet.transform.position = this.gameObject.transform.position;
     }
 
+    private void HandleSendingTouchMessage(GridPlayerScript player)
+    {
+        // Only send a touch up message if the colors are different (in order to keep our
+        // bandwidth under 4k a second)
+        if (player.GetActivePaletteColor() != GetComponent<Renderer>().material.color)
+            player.SendMessage("OnHandleOnChildTouchUp", this);
+    }
+
     /// <summary>
     /// Handles touch behavior triggered by the TouchAndMouseInput client script
     /// by calling the associated method on the parent player object (which will
@@ -67,7 +75,8 @@ public class ElementScript : MonoBehaviour
         {
             if(player.isLocalPlayer)
             {
-                player.SendMessage("OnHandleOnChildTouchUp", this);
+                HandleSendingTouchMessage(player);
+
             }
         }
 
@@ -83,7 +92,7 @@ public class ElementScript : MonoBehaviour
         {
             if (player.isLocalPlayer)
             {
-                player.SendMessage("OnHandleOnChildTouchUp", this);
+                HandleSendingTouchMessage(player);
             }
         }
 
