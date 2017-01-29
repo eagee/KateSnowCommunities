@@ -57,7 +57,7 @@ public class NetworkConnectionHandler : MonoBehaviour
     {
         // The PC version of this software will always be in charge of creating the match (to avoid confusion with phone users)
         // Phone users will always connect expecting the PC to be there.
-        if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+        if(Application.platform == RuntimePlatform.WindowsEditor /*|| Application.platform == RuntimePlatform.WindowsPlayer*/)
         {
             IsServer = true;
         }

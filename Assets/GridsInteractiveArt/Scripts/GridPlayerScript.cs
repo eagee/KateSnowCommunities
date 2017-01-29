@@ -32,12 +32,12 @@ public class GridPlayerScript : NetworkBehaviour
 
     // Contains a dictionary of colors that can be referenced by ElementProperties
     private Dictionary<int, Color> myClientColors = new Dictionary<int, Color>();
-    private short myPaletteIndex;
+    private byte myPaletteIndex;
 
     /// <summary>
     /// Paint elements based on game objects in the scene that we can set properties on based on the server sync elements.
     /// </summary>
-    private Dictionary<string, GameObject> mySceneElements = new Dictionary<string, GameObject>();
+    private Dictionary<byte, GameObject> mySceneElements = new Dictionary<byte, GameObject>();
 
     /// <summary>
     /// Indicates whether the client frame is dirty or not, and needs to be updated based on changes in the server elements
@@ -57,6 +57,15 @@ public class GridPlayerScript : NetworkBehaviour
             myClientColors[palette.PaletteIndex] = palette.myPaletteColor;
         }
     }
+
+    public Color GetActivePaletteColor()
+    {
+        if (myClientColors.ContainsKey(myPaletteIndex))
+            return myClientColors[myPaletteIndex];
+
+        return myClientColors[0];
+    }
+
 
     /// <summary>
     /// If we're setting up the local player, this method will enable mouse and touch input.
@@ -114,7 +123,7 @@ public class GridPlayerScript : NetworkBehaviour
 
             foreach (var element in elements)
             {
-                ElementProperty newProperty = new ElementProperty(element.gameObject.name, (short)Random.Range(0, 12));
+                ElementProperty newProperty = new ElementProperty(byte.Parse(element.gameObject.name), (byte)Random.Range(0, 12));
                 myMasterInstance.ServerElements.Add(newProperty);
             }
         }
@@ -164,7 +173,7 @@ public class GridPlayerScript : NetworkBehaviour
         ElementScript[] paintElements = FindObjectsOfType<ElementScript>();
         foreach (var element in paintElements)
         {
-            mySceneElements.Add(element.gameObject.name, element.gameObject);
+            mySceneElements.Add(byte.Parse(element.gameObject.name), element.gameObject);
         }
 
         myFrameIsDirty = true;
@@ -197,10 +206,22 @@ public class GridPlayerScript : NetworkBehaviour
     /// <param name="elementID"></param>
     public void OnHandleOnChildTouchUp(ElementScript element)
     {
-        CmdServerSetVisibility(element.name, myPaletteIndex);
+
+        CmdServerSetVisibility(byte.Parse(element.name), myPaletteIndex);
+
+        // Code to prevnt overwriting shapes of the same color
+        //byte elementID = byte.Parse(element.name);
+        //for (int index = 0; index < myMasterInstance.ServerElements.Count; index++)
+        //{
+        //    if (myMasterInstance.ServerElements[index].ID == elementID
+        //     && myMasterInstance.ServerElements[index].shapePaletteIndex != myPaletteIndex)
+        //    {
+        //        
+        //    }
+        //}
     }
 
-    public void OnPaletteColorChanged(short paletteIndex)
+    public void OnPaletteColorChanged(byte paletteIndex)
     {
         if(myClientColors.ContainsKey(paletteIndex))
         {
@@ -219,7 +240,7 @@ public class GridPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="ID">The name of the component to change.</param>
     [Command]
-    public void CmdServerSetVisibility(string ID, short paletteIndex)
+    public void CmdServerSetVisibility(byte ID, byte paletteIndex)
     {
         myMasterInstance.CmdSetVisibility(ID, paletteIndex);
     }
@@ -231,10 +252,10 @@ public class GridPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="ID">The ID of the shape being changed.</param>
     //[Command]
-    public void CmdSetVisibility(string ID, short paletteIndex)
+    public void CmdSetVisibility(byte ID, byte paletteIndex)
     {
         int targetIndex = -1;
-        ElementProperty newElement = new ElementProperty("Empty", 0);
+        ElementProperty newElement = new ElementProperty(0, 0);
         for (int index = 0; index < ServerElements.Count; index++)
         {
             ElementProperty element = ServerElements[index];
@@ -243,9 +264,10 @@ public class GridPlayerScript : NetworkBehaviour
                 targetIndex = index;
                 newElement.ID = element.ID;
                 newElement.shapePaletteIndex = paletteIndex;
-                newElement.shapeFrame = (short)Random.Range(0, 12);
+                newElement.shapeFrame = (byte)Random.Range(0f, 12.9f);
                 ServerElements[targetIndex] = newElement;
                 RpcClientFrameIsDirty();
+                break;
             }
         }
     }
