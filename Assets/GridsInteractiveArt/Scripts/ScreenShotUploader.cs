@@ -116,7 +116,7 @@ public class ScreenShotUploader : MonoBehaviour
 
         //animator.SetBool("UploadingScreenShot", false);
 
-        Application.OpenURL("http://katesnow.work/wp-content/communities_gallery/");
+        Application.OpenURL("http://katesnow.work/grid-series-communities/");
     }
 
     void OnTouchUp()
