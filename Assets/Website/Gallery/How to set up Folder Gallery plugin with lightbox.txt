@@ -1,0 +1,8 @@
+
+
+        Download Lightbox 2 from http://lokeshdhakar.com/projects/lightbox2/
+        Unzip the archive
+        Upload the directory ‘lightbox’ to ‘/wp-content’.
+        Go To WordPress > Settings > Folder Gallery and select Lightbox 2 as Gallery Engine.
+        Done!
+
