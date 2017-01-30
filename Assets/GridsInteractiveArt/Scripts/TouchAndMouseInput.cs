@@ -21,47 +21,48 @@ public class TouchAndMouseInput : MonoBehaviour {
         m_networkManager = FindObjectOfType<NetworkManager>();
     }
 
+    private void HandleTouchPanning(ref Touch touchZero, ref Touch touchOne)
+    {
+        float moveCameraX = 0f;
+        float moveCameraY = 0f;
+
+        if ((touchZero.deltaPosition.x < 0 && touchOne.deltaPosition.x < 0) || ((touchZero.deltaPosition.x > 0 && touchOne.deltaPosition.x > 0)))
+        {
+            moveCameraX = (Mathf.Min(touchZero.deltaPosition.x, touchOne.deltaPosition.x) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
+        }
+
+        if ((touchZero.deltaPosition.y < 0 && touchOne.deltaPosition.y < 0) || ((touchZero.deltaPosition.y > 0 && touchOne.deltaPosition.y > 0)))
+        {
+            moveCameraY = (Mathf.Min(touchZero.deltaPosition.y, touchOne.deltaPosition.y) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
+        }
+
+        SmoothCamera2D camera2d = inputCamera.GetComponent<SmoothCamera2D>();
+        if ((moveCameraX != 0 || moveCameraY != 0) && (camera2d != null))
+        {
+            camera2d.MoveConnectedTarget(-moveCameraX, -moveCameraY);
+        }
+    }
+
+    private void HandleTouchZooming(ref Touch touchZero, ref Touch touchOne)
+    {
+        // Find the position in the previous frame of each touch.
+        Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
+        Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
+
+        // Find the magnitude of the vector (the distance) between the touches in each frame.
+        float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
+        float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
+
+        // Find the difference in the distances between each frame.
+        float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+        SpriteBehavior.HandleCameraZoom(deltaMagnitudeDiff, inputCamera, m_cameraZoomSpeed, m_minCameraSize, m_maxCameraSize);
+    }
+
     private void HandleMultiTouchInput(Touch touchZero, Touch touchOne)
     {
-        // Handle moving the camera left, right, up, and down (requires three fingers, even if we only use the first two)
-        if (Input.touchCount >= 3)
-        {
-            float moveCameraX = 0f;
-            float moveCameraY = 0f;
-
-            if ((touchZero.deltaPosition.x < 0 && touchOne.deltaPosition.x < 0) || ((touchZero.deltaPosition.x > 0 && touchOne.deltaPosition.x > 0)))
-            {
-                moveCameraX = (Mathf.Min(touchZero.deltaPosition.x, touchOne.deltaPosition.x) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
-            }
-
-            if ((touchZero.deltaPosition.y < 0 && touchOne.deltaPosition.y < 0) || ((touchZero.deltaPosition.y > 0 && touchOne.deltaPosition.y > 0)))
-            {
-                moveCameraY = (Mathf.Min(touchZero.deltaPosition.y, touchOne.deltaPosition.y) * m_cameraZoomSpeed) * inputCamera.orthographicSize / 12f;
-            }
-
-            SmoothCamera2D camera2d = inputCamera.GetComponent<SmoothCamera2D>();
-            if ((moveCameraX != 0 || moveCameraY != 0) && (camera2d != null))
-            {
-                camera2d.MoveConnectedTarget(-moveCameraX, -moveCameraY);
-            }
-        }
-
-        // Handle changing the camera zoom based on the two touches
-        else if (Input.touchCount <= 2)
-        { 
-            // Find the position in the previous frame of each touch.
-            Vector2 touchZeroPrevPos = touchZero.position - touchZero.deltaPosition;
-            Vector2 touchOnePrevPos = touchOne.position - touchOne.deltaPosition;
-
-            // Find the magnitude of the vector (the distance) between the touches in each frame.
-            float prevTouchDeltaMag = (touchZeroPrevPos - touchOnePrevPos).magnitude;
-            float touchDeltaMag = (touchZero.position - touchOne.position).magnitude;
-
-            // Find the difference in the distances between each frame.
-            float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
-
-            SpriteBehavior.HandleCameraZoom(deltaMagnitudeDiff, inputCamera, m_cameraZoomSpeed, m_minCameraSize, m_maxCameraSize);
-        }
+        HandleTouchPanning(ref touchZero, ref touchOne);
+        HandleTouchZooming(ref touchZero, ref touchOne);
     }
 
     private void HandleSingleTouchInput()

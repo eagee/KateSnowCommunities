@@ -6895,7 +6895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smoothTime: 1
-  maxOrthographicSize: 12.02705
+  maxOrthographicSize: 15
   minOrthographicSize: 3
   isTakingScreenShot: 0
   connectedTarget: {fileID: 1040384513}
