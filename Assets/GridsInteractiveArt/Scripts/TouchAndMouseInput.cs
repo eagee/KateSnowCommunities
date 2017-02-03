@@ -9,6 +9,7 @@ public class TouchAndMouseInput : MonoBehaviour {
     public float m_minCameraSize = 3.0f;
     public float m_maxCameraSize = 12.0f;
     public float m_cameraZoomSpeed = 0.0005f;
+    private float myDebounceTimer = 0.0f;
 
     private NetworkManager m_networkManager;
     private List<GameObject> touchList = new List<GameObject>();
@@ -40,6 +41,7 @@ public class TouchAndMouseInput : MonoBehaviour {
         if ((moveCameraX != 0 || moveCameraY != 0) && (camera2d != null))
         {
             camera2d.MoveConnectedTarget(-moveCameraX, -moveCameraY);
+            myDebounceTimer = 0.5f;
         }
     }
 
@@ -56,13 +58,11 @@ public class TouchAndMouseInput : MonoBehaviour {
         // Find the difference in the distances between each frame.
         float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-        SpriteBehavior.HandleCameraZoom(deltaMagnitudeDiff, inputCamera, m_cameraZoomSpeed, m_minCameraSize, m_maxCameraSize);
-    }
-
-    private void HandleMultiTouchInput(Touch touchZero, Touch touchOne)
-    {
-        HandleTouchPanning(ref touchZero, ref touchOne);
-        HandleTouchZooming(ref touchZero, ref touchOne);
+        if(deltaMagnitudeDiff != 0f)
+        {
+            myDebounceTimer = 0.5f;
+            SpriteBehavior.HandleCameraZoom(deltaMagnitudeDiff, inputCamera, m_cameraZoomSpeed, m_minCameraSize, m_maxCameraSize);
+        }
     }
 
     private void HandleSingleTouchInput()
@@ -138,6 +138,13 @@ public class TouchAndMouseInput : MonoBehaviour {
     {
         if (inputCamera == null) return;
 
+        if (myDebounceTimer > 0.0f)
+        {
+            myDebounceTimer -= Time.deltaTime;
+            if(myDebounceTimer < 0.0f)
+                myDebounceTimer = 0.0f;
+        }
+
         // If there's only a single touch or a user is releasing the mouse button
         // use mouse input controls to interact with the scene. Otherwise use touch
         // input controls.
@@ -149,11 +156,15 @@ public class TouchAndMouseInput : MonoBehaviour {
             Touch touchZero = Input.GetTouch(0);
             Touch touchOne = Input.GetTouch(1);
 
-            HandleMultiTouchInput(touchZero, touchOne);
+            HandleTouchPanning(ref touchZero, ref touchOne);
+            HandleTouchZooming(ref touchZero, ref touchOne);
         }
         else if (Input.touchCount == 1 || Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))
         {
-            HandleSingleTouchInput();
+            // Only handle single touch input if we're not debouncing from a multi-touch input
+            // so that zooming or panning doesn't actually change the art on the screen.
+            if(myDebounceTimer <= 0.0f)
+                HandleSingleTouchInput();
         }
 
     }

@@ -31,7 +31,11 @@ public static class SpriteBehavior  {
     {
         // If the camera is orthographic...
         // ... change the orthographic size based on the change in distance between the touches.
-        inputCamera.orthographicSize += deltaMagnitudeDiff * zoomSpeed;
+        //inputCamera.orthographicSize += deltaMagnitudeDiff * zoomSpeed;
+
+        inputCamera.orthographicSize = Mathf.SmoothDamp(inputCamera.orthographicSize, 
+            (inputCamera.orthographicSize + deltaMagnitudeDiff * zoomSpeed), 
+            ref zoomSpeed, Time.deltaTime);
 
         if (inputCamera.orthographicSize < minSize) 
         {
