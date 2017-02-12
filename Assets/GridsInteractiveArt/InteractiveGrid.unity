@@ -8710,6 +8710,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   edtUseMatchMaker: 1
+  supportClientOnly: 1
 --- !u!4 &1548260647
 Transform:
   m_ObjectHideFlags: 0

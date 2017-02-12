@@ -11,16 +11,10 @@ public class TouchAndMouseInput : MonoBehaviour {
     public float m_cameraZoomSpeed = 0.0005f;
     private float myDebounceTimer = 0.0f;
 
-    private NetworkManager m_networkManager;
     private List<GameObject> touchList = new List<GameObject>();
     private GameObject[] oldTouchList;
     private RaycastHit hit;
     private Vector3 m_lastHitPoint;
-
-    void Awake()
-    {
-        m_networkManager = FindObjectOfType<NetworkManager>();
-    }
 
     private void HandleTouchPanning(ref Touch touchZero, ref Touch touchOne)
     {

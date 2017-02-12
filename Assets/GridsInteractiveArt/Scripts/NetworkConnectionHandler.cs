@@ -14,6 +14,7 @@ using System.Collections.Generic;
 public class NetworkConnectionHandler : MonoBehaviour
 {
     public bool edtUseMatchMaker = true;
+	public bool supportClientOnly = false;
 
     private bool m_isServer = false;
     private bool m_useMatchMaker = true;
@@ -57,7 +58,7 @@ public class NetworkConnectionHandler : MonoBehaviour
     {
         // The PC version of this software will always be in charge of creating the match (to avoid confusion with phone users)
         // Phone users will always connect expecting the PC to be there.
-        if(Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+		if((Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) && !supportClientOnly)
         {
             IsServer = true;
         }
