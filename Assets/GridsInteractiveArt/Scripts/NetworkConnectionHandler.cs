@@ -4,6 +4,8 @@ using UnityEngine.Networking.Match;
 using UnityEngine.Networking.Types;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// When the isServer property is true: this class ensures that a match maker room exists and that an internet match has been created.
@@ -14,15 +16,20 @@ using System.Collections.Generic;
 public class NetworkConnectionHandler : MonoBehaviour
 {
     public bool edtUseMatchMaker = true;
-	public bool supportClientOnly = false;
+    public bool supportClientOnly = false;
 
     private bool m_isServer = false;
+    private bool m_initialServerSetting = false;
     private bool m_useMatchMaker = true;
+    private bool m_hanlderIsBusy = false;
     private float m_ConnectionTimer = 5.0f;
-    private const float STD_CONNECTION_WAIT_TIME = 1.0f;
+    private const float STD_CONNECTION_WAIT_TIME = 2.0f;
     private const float MAX_CONNECTION_WAIT_TIME = 2.0f;
     private float m_ConnectionWaitTime = STD_CONNECTION_WAIT_TIME;
-    
+    private int m_ListMatchAttempts = 0;
+    private const int MAX_LIST_ATTEMPTS = 5;
+    private TextMesh m_StatusText;
+
     private NetworkManager m_networkManager;
 
     /// <summary>
@@ -56,9 +63,11 @@ public class NetworkConnectionHandler : MonoBehaviour
     /// </summary>
     void Start()
     {
+        m_ListMatchAttempts = 0;
+        m_hanlderIsBusy = false;
         // The PC version of this software will always be in charge of creating the match (to avoid confusion with phone users)
         // Phone users will always connect expecting the PC to be there.
-		if((Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) && !supportClientOnly)
+        if ((Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer) && !supportClientOnly)
         {
             IsServer = true;
         }
@@ -67,6 +76,7 @@ public class NetworkConnectionHandler : MonoBehaviour
             IsServer = false;
         }
         UseMatchMaker = edtUseMatchMaker;
+        m_initialServerSetting = IsServer;
     }
 
     /// <summary>
@@ -75,6 +85,7 @@ public class NetworkConnectionHandler : MonoBehaviour
     void Awake()
     {
         m_networkManager = GetComponent<NetworkManager>();
+        m_StatusText = GetComponent<TextMesh>();
     }
 
     // Update is called once per frame
@@ -101,45 +112,109 @@ public class NetworkConnectionHandler : MonoBehaviour
         }// end check for connection timer.
     }
 
+    public void OnMatchList(bool success, string extendedInfo, List<MatchInfoSnapshot> matches)
+    {
+        m_hanlderIsBusy = false;
+        Debug.Log("OnMatchList, success: " + success.ToString());
+        // If listing matches fails three times, then we'll set up as a server and create a match instead.
+        if (!success || matches.Count == 0)
+        {
+            m_ListMatchAttempts++;
+            if (m_ListMatchAttempts > MAX_LIST_ATTEMPTS)
+            {
+                IsServer = true;
+            }
+        }
+        else
+        {
+            m_StatusText.text = "";
+        }
+        m_networkManager.OnMatchList(success, extendedInfo, matches);
+    }
+
+    public void OnMatchCreate(bool success, string extendedInfo, MatchInfo matchInfo)
+    {
+        m_hanlderIsBusy = false;
+        Debug.Log("OnMatchCreate, success: " + success.ToString());
+        if (success)
+        {
+            m_StatusText.text = "";
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            ResetMatchmaker();
+        }
+        m_networkManager.OnMatchCreate(success, extendedInfo, matchInfo);
+    }
+
+    public void OnMatchJoined(bool success, string extendedInfo, MatchInfo matchInfo)
+    {
+        m_hanlderIsBusy = false;
+        Debug.Log("OnMatchJoined, success: " + success.ToString());
+        if (success)
+        {
+            m_StatusText.text = "";
+        }
+        m_networkManager.OnMatchJoined(success, extendedInfo, matchInfo);
+    }
+
     /// <summary>
     /// Ensures that for a client or server matchmaker creates or connects to the necessary matches.
     /// </summary>
     private void HandleMatchmakerSetup()
     {
+        if (m_hanlderIsBusy) return;
+
         if (m_networkManager.matchMaker == null)
         {
             Debug.Log("Starting Matchmaker!");
+            m_StatusText.text = "";
             m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
             m_networkManager.StartMatchMaker();
         }
         else if (m_networkManager.matchInfo == null)
         {
-            if (m_networkManager.matches == null)
+            Debug.Log("Matchinfo is null!");
+            if (m_networkManager.matches == null || m_networkManager.matches.Count <= 0)
             {
                 if (IsServer)
                 {
                     Debug.Log("Creating a Server Match!");
+                    m_StatusText.text = "*****";
                     m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
-                    m_networkManager.matchMaker.CreateMatch(m_networkManager.matchName, m_networkManager.matchSize, true, "", "", "", 0, 1, m_networkManager.OnMatchCreate);
+                    m_hanlderIsBusy = true;
+                    m_networkManager.matchMaker.CreateMatch(m_networkManager.matchName, m_networkManager.matchSize, true, "", "", "", 0, 1, OnMatchCreate);
                 }
                 else
                 {
                     Debug.Log("Getting List of Matches!");
+                    StringBuilder statusText = new StringBuilder();
+                    //statusText.Append("[");
+                    int numberOfSpaces = MAX_LIST_ATTEMPTS - m_ListMatchAttempts;
+                    int numberOfDots = MAX_LIST_ATTEMPTS - numberOfSpaces;
+                    for (int i = 0; i < numberOfDots; i++) statusText.Append("-");
+                    for (int i = 0; i < numberOfSpaces; i++) statusText.Append(".");
+                    //statusText.Append("]");
+                    m_StatusText.text = statusText.ToString();
                     m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
-                    m_networkManager.matchMaker.ListMatches(0, 20, m_networkManager.matchName, false, 0, 1, m_networkManager.OnMatchList);
+                    m_hanlderIsBusy = true;
+                    m_networkManager.matchMaker.ListMatches(0, 20, m_networkManager.matchName, false, 0, 1, OnMatchList);
                 }
             }
-            else if(!IsServer)
+            else if (!IsServer)
             {
                 // If this is a client connection and we've got a populated list of matches, then go ahead and join the first one
                 // (it's the only one we should have available for the show)
-                if(m_networkManager.matches.Count > 0)
+                if (m_networkManager.matches.Count > 0)
                 {
-                    Debug.Log("Joining KateSnowInteractive Match!");
+                    Debug.Log("Joining Communities Interactive Match!");
+                    m_StatusText.text = "^^^^^";
                     m_ConnectionWaitTime = MAX_CONNECTION_WAIT_TIME;
                     m_networkManager.matchName = m_networkManager.matches[0].name;
                     m_networkManager.matchSize = (uint)m_networkManager.matches[0].currentSize;
-                    m_networkManager.matchMaker.JoinMatch(m_networkManager.matches[0].networkId, "", "", "", 0, 1, m_networkManager.OnMatchJoined);
+                    m_hanlderIsBusy = true;
+                    m_networkManager.matchMaker.JoinMatch(m_networkManager.matches[0].networkId, "", "", "", 0, 1, OnMatchJoined);
                 }
                 else
                 {
@@ -148,6 +223,16 @@ public class NetworkConnectionHandler : MonoBehaviour
                 }
             }
         }// end else if (m_networkManager.matchInfo == null)
+    }
+
+    public void ResetMatchmaker()
+    {
+        Debug.Log("Killing MatchMaker.");
+        m_networkManager.StopMatchMaker();
+        NetworkTransport.Shutdown();
+        NetworkTransport.Init();
+        IsServer = m_initialServerSetting;
+        m_ListMatchAttempts = 0;
     }
 }
 
