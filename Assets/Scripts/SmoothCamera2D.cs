@@ -13,6 +13,8 @@ public class SmoothCamera2D : MonoBehaviour {
     public NetworkManager myNetworkManager;
     public Transform activeTarget;
 
+    private GlobalSettings m_globalSettings = GlobalSettings.Instance;
+
     float rightBound;
     float leftBound;
     float topBound;
@@ -43,6 +45,11 @@ public class SmoothCamera2D : MonoBehaviour {
         }
     }
 
+    void Start()
+    {
+        Screen.SetResolution(1920, 1080, true);
+    }
+
     void Awake()
     {
         myStartingConnectedPosition = connectedTarget.position;
@@ -61,7 +68,7 @@ public class SmoothCamera2D : MonoBehaviour {
 	void Update () {
 
         // Update our camera target based on whether we have a client connection or not *and* based on the platform
-        if((myNetworkManager.IsClientConnected()) && (Application.platform != RuntimePlatform.WindowsPlayer) && (!isTakingScreenShot))
+        if((myNetworkManager.IsClientConnected()) && (m_globalSettings.ShowPalette) && (!isTakingScreenShot))
         {
             setTarget(connectedTarget);
         }

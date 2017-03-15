@@ -16,7 +16,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
     //private Vector3 myTargetScale = new Vector3(2.0f, 2.0f, 2.0f);
     private int myCurrentSprintShape;
     private float myTimer = 0f;
-
+    private GlobalSettings m_GlobalSettings = GlobalSettings.Instance;
     // Use this for initialization
     void Start()
     {
@@ -30,7 +30,7 @@ public class PlayerPaintPaletteHandler : MonoBehaviour
     void Awake()
     {
         // We're going to hide these objects in the windows player, but show them in the editor.
-        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        if (m_GlobalSettings.ShowPalette == false)
         {
             isVisible = false;
         }

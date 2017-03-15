@@ -33,6 +33,7 @@ public class GridPlayerScript : NetworkBehaviour
     // Contains a dictionary of colors that can be referenced by ElementProperties
     private Dictionary<int, Color> myClientColors = new Dictionary<int, Color>();
     private byte myPaletteIndex;
+    private float myRpcHeartbeatTimer = 0f;
 
     /// <summary>
     /// Paint elements based on game objects in the scene that we can set properties on based on the server sync elements.
@@ -108,6 +109,8 @@ public class GridPlayerScript : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
+
+        myRpcHeartbeatTimer = 0f;
 
         // Get the master player script object on the server, if one doesn't
         // exist already, then assign this player object as the master instance
@@ -196,6 +199,17 @@ public class GridPlayerScript : NetworkBehaviour
                     mySceneElements[element.ID].GetComponent<Renderer>().material.color = myClientColors[element.shapePaletteIndex];
                 }
             }
+        }
+
+        if(isServer)
+        {
+            myRpcHeartbeatTimer += Time.deltaTime;
+            if(myRpcHeartbeatTimer > 10.0f)
+            {
+                myRpcHeartbeatTimer = 0.0f;
+                RpcClientFrameIsDirty();
+            }
+            
         }
     }
 

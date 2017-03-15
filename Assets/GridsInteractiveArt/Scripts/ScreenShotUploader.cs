@@ -11,11 +11,12 @@ public class ScreenShotUploader : MonoBehaviour
     public NetworkManager myNetworkManager;
     public bool isVisible = true;
     private float myDebounceTimer = 0.0f;
+    GlobalSettings m_globalSettings = GlobalSettings.Instance;
 
     void Awake()
     {
         // We're going to hide these objects in the windows player, but show them in the editor.
-        if (Application.platform == RuntimePlatform.WindowsPlayer)
+        if (m_globalSettings.ShowPalette == false)
         {
             isVisible = false;
         }
